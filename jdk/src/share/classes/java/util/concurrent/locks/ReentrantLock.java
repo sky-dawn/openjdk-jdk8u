@@ -129,12 +129,14 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         final boolean nonfairTryAcquire(int acquires) {
             final Thread current = Thread.currentThread();
             int c = getState();
+            // TODO c 等于0说明持有锁的线程刚好释放了锁，这时候可以尝试抢锁
             if (c == 0) {
                 if (compareAndSetState(0, acquires)) {
                     setExclusiveOwnerThread(current);
                     return true;
                 }
             }
+            // TODO 当前线程就是持有锁的线程，说明锁重入
             else if (current == getExclusiveOwnerThread()) {
                 int nextc = c + acquires;
                 if (nextc < 0) // overflow
@@ -154,6 +156,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
                 free = true;
                 setExclusiveOwnerThread(null);
             }
+            // TODO 在setState前，state没有改变，这意味着其它线程获取不到锁，从而保证了以上操作的原子性
             setState(c);
             return free;
         }
@@ -201,9 +204,13 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         /**
          * Performs lock.  Try immediate barge, backing up to normal
          * acquire on failure.
+         *
+         * TODO 获取锁
          */
         final void lock() {
+            // TODO 直接抢锁，不管有没有线程排队； 将AQS中的stateOffset设置为1
             if (compareAndSetState(0, 1))
+                // TODO 设置当前获取锁的线程
                 setExclusiveOwnerThread(Thread.currentThread());
             else
                 acquire(1);
@@ -221,6 +228,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         private static final long serialVersionUID = -3000897897090466540L;
 
         final void lock() {
+            // TODO 执行标准的AQS获取锁流程
             acquire(1);
         }
 
@@ -232,7 +240,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
             final Thread current = Thread.currentThread();
             int c = getState();
             if (c == 0) {
-                if (!hasQueuedPredecessors() &&
+                if (!hasQueuedPredecessors() && // TODO 判断是否有线程在排队
                     compareAndSetState(0, acquires)) {
                     setExclusiveOwnerThread(current);
                     return true;
@@ -254,6 +262,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
      * This is equivalent to using {@code ReentrantLock(false)}.
      */
     public ReentrantLock() {
+        // TODO 默认是非公平锁; 因为通过大量测试发现非公平锁的性能优于公平锁
         sync = new NonfairSync();
     }
 

@@ -680,6 +680,7 @@ BytecodeInterpreter::run(interpreterState istate) {
 #endif // HACK
 
       // Lock method if synchronized.
+      // TODO synchronized 锁
       if (METHOD->is_synchronized()) {
         // oop rcvr = locals[0].j.r;
         oop rcvr;

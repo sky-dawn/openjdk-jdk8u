@@ -285,6 +285,8 @@ import sun.misc.Unsafe;
  *
  * @since 1.5
  * @author Doug Lea
+ *
+ * TODO 子类只需要实现获取锁和释放锁逻辑，排队阻塞及如何唤醒阻塞队列由AQS完成
  */
 public abstract class AbstractQueuedSynchronizer
     extends AbstractOwnableSynchronizer
@@ -301,9 +303,9 @@ public abstract class AbstractQueuedSynchronizer
     /**
      * Wait queue node class.
      *
-     * <p>The wait queue is a variant of a "CLH" (Craig, Landin, and
+     * <p>The wait queue is a variant(变种ˈveəriənt) of a "CLH" (Craig, Landin, and
      * Hagersten) lock queue. CLH locks are normally used for
-     * spinlocks.  We instead use them for blocking synchronizers, but
+     * spinlocks(自旋锁).  We instead use them for blocking synchronizers, but
      * use the same basic tactic of holding some of the control
      * information about a thread in the predecessor of its node.  A
      * "status" field in each node keeps track of whether a thread
@@ -316,7 +318,7 @@ public abstract class AbstractQueuedSynchronizer
      * it only gives the right to contend.  So the currently released
      * contender thread may need to rewait.
      *
-     * <p>To enqueue into a CLH lock, you atomically splice it in as new
+     * <p>To enqueue（[ɪnˈkjuː]排队，入队，队列） into a CLH lock, you atomically splice([splaɪs]拼接) it in as new
      * tail. To dequeue, you just set the head field.
      * <pre>
      *      +------+  prev +-----+       +-----+
@@ -358,11 +360,12 @@ public abstract class AbstractQueuedSynchronizer
      * a new predecessor, unless we can identify an uncancelled
      * predecessor who will carry this responsibility.
      *
-     * <p>CLH queues need a dummy header node to get started. But
+     * <p>CLH queues need a dummy(假的，虚拟的，傀儡) header node to get started. But
      * we don't create them on construction, because it would be wasted
-     * effort if there is never contention. Instead, the node
+     * effort if there is never contention( [kənˈtenʃn]竞争，争论，观点). Instead, the node
      * is constructed and head and tail pointers are set upon first
      * contention.
+     * // TODO CLH链表需要一个虚拟头结点header去启动，这个节点只会在产生竞争的情况下才会初始化，避免性能浪费
      *
      * <p>Threads waiting on Conditions use the same nodes, but
      * use an additional link. Conditions only need to link nodes
@@ -529,6 +532,7 @@ public abstract class AbstractQueuedSynchronizer
 
     /**
      * The synchronization state.
+     * TODO 同步状态，表示是否拿到锁及重入次数
      */
     private volatile int state;
 
@@ -584,6 +588,7 @@ public abstract class AbstractQueuedSynchronizer
         for (;;) {
             Node t = tail;
             if (t == null) { // Must initialize
+                // TODO 如果队列为空，则创建一个新节点作为head
                 if (compareAndSetHead(new Node()))
                     tail = head;
             } else {
@@ -603,16 +608,20 @@ public abstract class AbstractQueuedSynchronizer
      * @return the new node
      */
     private Node addWaiter(Node mode) {
+        // TODO 构建当前线程的Node
         Node node = new Node(Thread.currentThread(), mode);
         // Try the fast path of enq; backup to full enq on failure
         Node pred = tail;
+        // TODO 判断尾节点是否存在
         if (pred != null) {
             node.prev = pred;
+            // TODO 尾节点存在，尝试将当前节点插入到队列尾部，成功则返回
             if (compareAndSetTail(pred, node)) {
                 pred.next = node;
                 return node;
             }
         }
+        // TODO 如果上述方式没能插入成功，则使用此方法插入
         enq(node);
         return node;
     }
@@ -1071,6 +1080,8 @@ public abstract class AbstractQueuedSynchronizer
      *         thrown in a consistent fashion for synchronization to work
      *         correctly.
      * @throws UnsupportedOperationException if exclusive mode is not supported
+     *
+     * TODO AQS不负责具体的获取锁逻辑
      */
     protected boolean tryAcquire(int arg) {
         throw new UnsupportedOperationException();
@@ -1193,10 +1204,12 @@ public abstract class AbstractQueuedSynchronizer
      * @param arg the acquire argument.  This value is conveyed to
      *        {@link #tryAcquire} but is otherwise uninterpreted and
      *        can represent anything you like.
+     *
+     * TODO 获取锁
      */
     public final void acquire(int arg) {
-        if (!tryAcquire(arg) &&
-            acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+        if (!tryAcquire(arg) && // TODO 由子类去实现获取锁的逻辑，并返回成功或失败的结果
+            acquireQueued(addWaiter(Node.EXCLUSIVE), arg)) // TODO 锁获取失败后添加到阻塞队列
             selfInterrupt();
     }
 
@@ -1256,9 +1269,13 @@ public abstract class AbstractQueuedSynchronizer
      *        {@link #tryRelease} but is otherwise uninterpreted and
      *        can represent anything you like.
      * @return the value returned from {@link #tryRelease}
+     *
+     * TODO 释放锁
      */
     public final boolean release(int arg) {
+        // TODO 子类实现如何释放锁
         if (tryRelease(arg)) {
+            // TODO 释放成功，则检查阻塞队列并唤醒
             Node h = head;
             if (h != null && h.waitStatus != 0)
                 unparkSuccessor(h);
@@ -1279,6 +1296,7 @@ public abstract class AbstractQueuedSynchronizer
      *        and can represent anything you like.
      */
     public final void acquireShared(int arg) {
+        // TODO 调用子类的实现尝试获取共享锁
         if (tryAcquireShared(arg) < 0)
             doAcquireShared(arg);
     }
@@ -1504,9 +1522,10 @@ public abstract class AbstractQueuedSynchronizer
      *   }
      * }}</pre>
      *
-     * @return {@code true} if there is a queued thread preceding the
+     * @return {@code true} if there is a queued thread preceding([prɪˈsiːdɪŋ]先前的，前面的；在...之前发生) the
      *         current thread, and {@code false} if the current thread
      *         is at the head of the queue or the queue is empty
+     * predecessor 【ˈpriːdəsesə(r)】前辈；前任
      * @since 1.7
      */
     public final boolean hasQueuedPredecessors() {
