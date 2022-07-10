@@ -105,7 +105,7 @@ public abstract class SelectorProvider {
     }
 
     private static boolean loadProviderAsService() {
-
+        // TODO spi 机制
         ServiceLoader<SelectorProvider> sl =
             ServiceLoader.load(SelectorProvider.class,
                                ClassLoader.getSystemClassLoader());
@@ -162,16 +162,20 @@ public abstract class SelectorProvider {
      * @return  The system-wide default selector provider
      */
     public static SelectorProvider provider() {
+        // TODO 避免多次实例化 provider
         synchronized (lock) {
             if (provider != null)
                 return provider;
             return AccessController.doPrivileged(
                 new PrivilegedAction<SelectorProvider>() {
                     public SelectorProvider run() {
+                            // TODO
                             if (loadProviderFromProperty())
                                 return provider;
+                            // TODO 采用 spi 机制加载 provider
                             if (loadProviderAsService())
                                 return provider;
+                            // TODO 创建默认的 provider
                             provider = sun.nio.ch.DefaultSelectorProvider.create();
                             return provider;
                         }

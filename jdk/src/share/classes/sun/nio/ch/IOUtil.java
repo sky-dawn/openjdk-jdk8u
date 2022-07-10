@@ -328,6 +328,7 @@ public class IOUtil {
      * Returns two file descriptors for a pipe encoded in a long.
      * The read end of the pipe is returned in the high 32 bits,
      * while the write end is returned in the low 32 bits.
+     * TODO 返回编码到long类型的2个fd， 读fd在高32位，写fd在低32位
      */
     static native long makePipe(boolean blocking);
 

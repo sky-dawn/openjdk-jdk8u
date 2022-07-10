@@ -33,7 +33,15 @@ import java.util.Map;
 import sun.security.action.GetIntegerAction;
 
 /**
+ * 在linux上操作原生的 epoll_event 结构体数组
  * Manipulates a native array of epoll_event structs on Linux:
+ *
+ * typedef union 定义联合体. 联合体可以由不同类型的简单变量组合构成.
+ * typedef struct 定义结构体. 结构体可以由不同类型的较复杂的变量组合构成.
+ * 结构体里可以含联合体. 联合体里不能含结构体.
+ * union的大小由最大的成员的大小决定;
+ * union成员共享同一块大小的内存，一次只能使用其中的一个成员，与struct形成鲜明对比;
+ * 对某一个成员赋值，会覆盖其他成员的值, 但前提是成员所占字节数相同，比如对char成员赋值就不会把整个int成员覆盖掉，因为char只占一个字节，而int占四个字节
  *
  * typedef union epoll_data {
  *     void *ptr;
@@ -126,7 +134,7 @@ class EPollArrayWrapper {
 
 
     EPollArrayWrapper() throws IOException {
-        // creates the epoll file descriptor
+        // creates the epoll file descriptor TODO 创建 epoll fd
         epfd = epollCreate();
 
         // the epoll_event array passed to epoll_wait

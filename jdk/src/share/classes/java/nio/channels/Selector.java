@@ -201,6 +201,8 @@ import java.util.Set;
  *
  * @see SelectableChannel
  * @see SelectionKey
+ *
+ * TODO 多路复用器
  */
 
 public abstract class Selector implements Closeable {
@@ -218,12 +220,15 @@ public abstract class Selector implements Closeable {
      * of the system-wide default {@link
      * java.nio.channels.spi.SelectorProvider} object.  </p>
      *
+     * TODO 用到了 spi 机制
+     *
      * @return  A new selector
      *
      * @throws  IOException
      *          If an I/O error occurs
      */
     public static Selector open() throws IOException {
+        // TODO 通过 provider 解耦创建多路复用器，这样可以由用户去指定某个多路复用器实现
         return SelectorProvider.provider().openSelector();
     }
 

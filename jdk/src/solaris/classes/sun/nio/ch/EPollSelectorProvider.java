@@ -29,10 +29,14 @@ import java.io.IOException;
 import java.nio.channels.*;
 import java.nio.channels.spi.*;
 
+/**
+ * TODO epoll provider
+ */
 public class EPollSelectorProvider
     extends SelectorProviderImpl
 {
     public AbstractSelector openSelector() throws IOException {
+        // TODO 实例化 epoll 多路复用器
         return new EPollSelectorImpl(this);
     }
 

@@ -105,6 +105,8 @@ import java.io.IOException;
  *
  * @see SelectableChannel
  * @see Selector
+ *
+ * TODO SelectionKey 表示一个向多路复用器注册的一个 SelectableChannel 的一个token信息
  */
 
 public abstract class SelectionKey {

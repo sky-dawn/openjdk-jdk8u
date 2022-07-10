@@ -1,6 +1,6 @@
 
 // Standard extensions get all permissions by default
-
+// TODO codeBase 指定代码路径
 grant codeBase "file:${{java.ext.dirs}}/*" {
         permission java.security.AllPermission;
 };

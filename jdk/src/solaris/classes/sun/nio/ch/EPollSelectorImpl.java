@@ -34,6 +34,8 @@ import sun.misc.*;
 /**
  * An implementation of Selector for Linux 2.6+ kernels that uses
  * the epoll event notification facility.
+ *
+ * TODO epoll 多路复用器
  */
 class EPollSelectorImpl
     extends SelectorImpl
@@ -46,7 +48,7 @@ class EPollSelectorImpl
     // The poll object
     EPollArrayWrapper pollWrapper;
 
-    // Maps from file descriptors to keys
+    // Maps from file descriptors to keys TODO 文件描述符与keys映射
     private Map<Integer,SelectionKeyImpl> fdToKey;
 
     // True if this Selector has been closed
@@ -59,15 +61,22 @@ class EPollSelectorImpl
     /**
      * Package private constructor called by factory method in
      * the abstract superclass Selector.
+     * TODO 实例化 epoll 多路复用器
      */
     EPollSelectorImpl(SelectorProvider sp) throws IOException {
         super(sp);
+        // TODO 创建一个非阻塞管道，包含读写2个fd
         long pipeFds = IOUtil.makePipe(false);
+        // TODO 读fd
         fd0 = (int) (pipeFds >>> 32);
+        // TODO 写fd
         fd1 = (int) pipeFds;
         try {
+            // TODO 创建 epoll_event 结构体数组包装器,
             pollWrapper = new EPollArrayWrapper();
+            //
             pollWrapper.initInterrupt(fd0, fd1);
+            // TODO 创建fd -> SelectionKey的映射
             fdToKey = new HashMap<>();
         } catch (Throwable t) {
             try {

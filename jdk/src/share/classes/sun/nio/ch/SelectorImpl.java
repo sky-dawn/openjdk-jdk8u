@@ -40,10 +40,10 @@ public abstract class SelectorImpl
     extends AbstractSelector
 {
 
-    // The set of keys with data ready for an operation
+    // The set of keys with data ready for an operation TODO 数据准备好的 keys
     protected Set<SelectionKey> selectedKeys;
 
-    // The set of keys registered with this Selector
+    // The set of keys registered with this Selector TODO 注册到该多路复用器的 keys
     protected HashSet<SelectionKey> keys;
 
     // Public views of the key sets
@@ -52,6 +52,7 @@ public abstract class SelectorImpl
 
     protected SelectorImpl(SelectorProvider sp) {
         super(sp);
+        // TODO 初始化 SelectionKey
         keys = new HashSet<SelectionKey>();
         selectedKeys = new HashSet<SelectionKey>();
         if (Util.atBugLevel("1.4")) {
