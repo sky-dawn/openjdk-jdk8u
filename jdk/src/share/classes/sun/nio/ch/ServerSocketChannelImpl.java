@@ -62,7 +62,7 @@ class ServerSocketChannelImpl
 
     // -- The following fields are protected by stateLock
 
-    // Channel state, increases monotonically
+    // Channel state, increases monotonically (mɒnə'tɒnɪklɪ 单调，单调的)
     private static final int ST_UNINITIALIZED = -1;
     private static final int ST_INUSE = 0;
     private static final int ST_KILLED = 1;
@@ -82,8 +82,10 @@ class ServerSocketChannelImpl
 
     ServerSocketChannelImpl(SelectorProvider sp) throws IOException {
         super(sp);
+        // TODO 创建服务端 socket 套接字，并返回fd；stream为true表示创建的是 TCP 协议，否则为 UDP
         this.fd =  Net.serverSocket(true);
         this.fdVal = IOUtil.fdVal(fd);
+        // TODO 设置 channel 状态为： 正在使用
         this.state = ST_INUSE;
     }
 
@@ -230,20 +232,24 @@ class ServerSocketChannelImpl
         synchronized (lock) {
             if (!isOpen())
                 throw new ClosedChannelException();
+            // TODO 是否绑定 IP 端口
             if (!isBound())
                 throw new NotYetBoundException();
             SocketChannel sc = null;
 
             int n = 0;
+            // TODO 创建 FileDescriptor ，并未正真创建 fd
             FileDescriptor newfd = new FileDescriptor();
             InetSocketAddress[] isaa = new InetSocketAddress[1];
 
             try {
+                // TODO 标记IO操作的开始
                 begin();
                 if (!isOpen())
                     return null;
                 thread = NativeThread.current();
                 for (;;) {
+                    // TODO 通过系统函数 accept(ssfd, sa, &sa_len) 获取 fd，然后设置到 newfd 和 isaa
                     n = accept(this.fd, newfd, isaa);
                     if ((n == IOStatus.INTERRUPTED) && isOpen())
                         continue;
@@ -258,8 +264,10 @@ class ServerSocketChannelImpl
             if (n < 1)
                 return null;
 
+            // TODO 设置为 阻塞
             IOUtil.configureBlocking(newfd, true);
             InetSocketAddress isa = isaa[0];
+            // TODO 创建 SocketChannel
             sc = new SocketChannelImpl(provider(), newfd, isa);
             SecurityManager sm = System.getSecurityManager();
             if (sm != null) {

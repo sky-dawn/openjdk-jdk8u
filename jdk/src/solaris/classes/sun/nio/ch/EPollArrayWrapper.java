@@ -78,8 +78,8 @@ class EPollArrayWrapper {
     private static final int EVENT_OFFSET     = 0;
     private static final int DATA_OFFSET      = offsetofData();
     private static final int FD_OFFSET        = DATA_OFFSET;
-    private static final int OPEN_MAX         = IOUtil.fdLimit();
-    private static final int NUM_EPOLLEVENTS  = Math.min(OPEN_MAX, 8192);
+    private static final int OPEN_MAX         = IOUtil.fdLimit();   // TODO fd最大值
+    private static final int NUM_EPOLLEVENTS  = Math.min(OPEN_MAX, 8192);   // epoll_event数量
 
     // Special value to indicate that an update should be ignored
     private static final byte  KILLED = (byte)-1;
@@ -134,11 +134,13 @@ class EPollArrayWrapper {
 
 
     EPollArrayWrapper() throws IOException {
-        // creates the epoll file descriptor TODO 创建 epoll fd
+        // creates the epoll file descriptor TODO 创建 epoll 并返回 epoll fd，native方法
         epfd = epollCreate();
 
         // the epoll_event array passed to epoll_wait
+        // TODO NUM_EPOLLEVENTS 最大为 8192，
         int allocationSize = NUM_EPOLLEVENTS * SIZE_EPOLLEVENT;
+        // TODO 申请对外内存，且需要页对齐，用于保存 epoll_event
         pollArray = new AllocatedNativeObject(allocationSize, true);
         pollArrayAddress = pollArray.address();
 
@@ -150,6 +152,7 @@ class EPollArrayWrapper {
     void initInterrupt(int fd0, int fd1) {
         outgoingInterruptFD = fd1;
         incomingInterruptFD = fd0;
+        // TODO 向 epoll 中注册 fd0 并监听可读事件
         epollCtl(epfd, EPOLL_CTL_ADD, fd0, EPOLLIN);
     }
 

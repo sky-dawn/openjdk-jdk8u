@@ -60,6 +60,7 @@ public class Net {
 
     /**
      * Tells whether dual-IPv4/IPv6 sockets should be used.
+     * dual ˈdjuːəl 双的，双重的
      */
     static boolean isIPv6Available() {
         if (!checkedIPv6) {
@@ -412,10 +413,11 @@ public class Net {
     }
 
     static FileDescriptor serverSocket(boolean stream) {
+        // TODO 将 fd 封装成 FileDescriptor 对象
         return IOUtil.newFD(socket0(isIPv6Available(), stream, true, fastLoopback));
     }
 
-    // Due to oddities SO_REUSEADDR on windows reuse is ignored
+    // Due to oddities SO_REUSEADDR on windows reuse is ignored TODO 返回fd
     private static native int socket0(boolean preferIPv6, boolean stream, boolean reuse,
                                       boolean fastLoopback);
 

@@ -99,6 +99,7 @@ Java_sun_nio_ch_ServerSocketChannelImpl_accept0(JNIEnv *env, jobject this,
      */
     for (;;) {
         socklen_t sa_len = alloc_len;
+        // TODO 通过 ssfd 即 serverSocket fd 得到新的 fd
         newfd = accept(ssfd, sa, &sa_len);
         if (newfd >= 0) {
             break;

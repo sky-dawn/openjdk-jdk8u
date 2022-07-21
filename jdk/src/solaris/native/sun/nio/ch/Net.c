@@ -234,13 +234,14 @@ Java_sun_nio_ch_Net_socket0(JNIEnv *env, jclass cl, jboolean preferIPv6,
                             jboolean stream, jboolean reuse, jboolean ignored)
 {
     int fd;
+    // TODO SOCK_STREAM是基于TCP的，数据传输比较有保障；SOCK_DGRAM是基于UDP的， 是无保障的面向消息的socket， 主要用于在网络上发广播信息
     int type = (stream ? SOCK_STREAM : SOCK_DGRAM);
 #ifdef AF_INET6
     int domain = (ipv6_available() && preferIPv6) ? AF_INET6 : AF_INET;
 #else
     int domain = AF_INET;
 #endif
-
+    // TODO
     fd = socket(domain, type, 0);
     if (fd < 0) {
         return handleSocketError(env, errno);

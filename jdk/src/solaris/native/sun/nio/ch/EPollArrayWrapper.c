@@ -80,8 +80,15 @@ JNIEXPORT jint JNICALL
 Java_sun_nio_ch_EPollArrayWrapper_epollCreate(JNIEnv *env, jobject this)
 {
     /*
-     * epoll_create expects a size as a hint to the kernel about how to
-     * dimension internal structures. We can't predict the size in advance.
+     * epoll_create expects a size as a hint提示，暗示 to the kernel about how to
+     * dimension大小，维度，范围，规模；标出尺寸 internal structures. We can't predict the size in advance.
+     * TODO 创建 epoll，其中包括 eventpoll 的创建，eventpoll结构体里面包含了2个重要的数据结构
+     *   struct eventpoll {
+     *	    /* List of ready file descriptors */ fd就绪队列
+     *	    struct list_head rdllist;
+     *	    /* RB tree root used to store monitored fd structs */ 红黑树的根节点，用于存储被监听的 fd
+     *	    struct rb_root_cached rbr;
+     *   }
      */
     int epfd = epoll_create(256);
     if (epfd < 0) {

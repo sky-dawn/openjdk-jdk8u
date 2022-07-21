@@ -29,20 +29,21 @@
 package sun.nio.ch;                                     // Formerly in sun.misc
 
 
-// ## In the fullness of time, this class will be eliminated
+// ## In the fullness of time 在适当的时候, this class will be eliminated （ɪˈlɪmɪneɪtɪd 被淘汰）
 
 class AllocatedNativeObject                             // package-private
     extends NativeObject
 {
 
     /**
+     * TODO 在堆外分配一块至少 size 大小的内存空间
      * Allocates a memory area of at least <tt>size</tt> bytes outside of the
      * Java heap and creates a native object for that area.
      *
      * @param  size
      *         Number of bytes to allocate
      *
-     * @param  pageAligned
+     * @param  pageAligned TODO 是否页对齐
      *         If <tt>true</tt> then the area will be aligned on a hardware
      *         page boundary
      *

@@ -90,11 +90,13 @@ Java_sun_nio_ch_IOUtil_makePipe(JNIEnv *env, jobject this, jboolean blocking)
 {
     int fd[2];
 
+    // TODO 调用系统函数 pipe 创建管道
     if (pipe(fd) < 0) {
         JNU_ThrowIOExceptionWithLastError(env, "Pipe failed");
         return 0;
     }
     if (blocking == JNI_FALSE) {
+        // TODO 为读写2个fd设置非阻塞
         if ((configureBlocking(fd[0], JNI_FALSE) < 0)
             || (configureBlocking(fd[1], JNI_FALSE) < 0)) {
             JNU_ThrowIOExceptionWithLastError(env, "Configure blocking failed");

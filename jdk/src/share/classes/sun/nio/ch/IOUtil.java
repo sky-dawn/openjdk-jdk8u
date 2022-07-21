@@ -329,6 +329,9 @@ public class IOUtil {
      * The read end of the pipe is returned in the high 32 bits,
      * while the write end is returned in the low 32 bits.
      * TODO 返回编码到long类型的2个fd， 读fd在高32位，写fd在低32位
+     * 管道是Linux系统下一种IPC通信机制，可以用于进程间通信，线程间通信。
+     * 1. 管道是半双工的，即数据只能在一个方向上流动；
+     * 2. 管道只能在具有公共祖先的两个进程之间使用。通常一个管道由一个进程创建，在进程调用fork之后，这个管道就能在父进程和子进程之间使用了。
      */
     static native long makePipe(boolean blocking);
 

@@ -65,16 +65,16 @@ class EPollSelectorImpl
      */
     EPollSelectorImpl(SelectorProvider sp) throws IOException {
         super(sp);
-        // TODO 创建一个非阻塞管道，包含读写2个fd
+        // TODO 创建一个非阻塞管道，管道为办双工的，包含读写2个fd
         long pipeFds = IOUtil.makePipe(false);
         // TODO 读fd
         fd0 = (int) (pipeFds >>> 32);
         // TODO 写fd
         fd1 = (int) pipeFds;
         try {
-            // TODO 创建 epoll_event 结构体数组包装器,
+            // TODO 创建 epoll 包装器，它创建了 epoll
             pollWrapper = new EPollArrayWrapper();
-            //
+            // TODO 初始化中断
             pollWrapper.initInterrupt(fd0, fd1);
             // TODO 创建fd -> SelectionKey的映射
             fdToKey = new HashMap<>();

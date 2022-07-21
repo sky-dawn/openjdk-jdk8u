@@ -145,7 +145,7 @@ public abstract class AbstractInterruptibleChannel
     private volatile Thread interrupted;
 
     /**
-     * Marks the beginning of an I/O operation that might block indefinitely.
+     * Marks the beginning of an I/O operation that might block indefinitely(ɪnˈdefɪnətli无限地，不确定地).
      *
      * <p> This method should be invoked in tandem with the {@link #end end}
      * method, using a <tt>try</tt>&nbsp;...&nbsp;<tt>finally</tt> block as

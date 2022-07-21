@@ -103,8 +103,13 @@ public abstract class ServerSocketChannel
      *
      * @throws  IOException
      *          If an I/O error occurs
+     * TODO 创建 ServerSocketChannel
      */
     public static ServerSocketChannel open() throws IOException {
+        // TODO
+        /**
+         * {@link sun.nio.ch.SelectorProviderImpl#openServerSocketChannel}
+         */
         return SelectorProvider.provider().openServerSocketChannel();
     }
 
