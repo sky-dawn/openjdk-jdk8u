@@ -90,6 +90,7 @@ class SocketChannelImpl
     private boolean readyToConnect = false;
 
     // Socket adaptor, created on demand
+    // TODO 封装了 SocketChannelImpl 和 InputStream
     private Socket socket;
 
     // -- End of fields protected by stateLock

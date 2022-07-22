@@ -201,6 +201,7 @@ class SocketAdaptor
                 if (!sc.isBlocking())
                     throw new IllegalBlockingModeException();
 
+                // TODO 可知数据最终是通过 SocketChannel 读取
                 if (timeout == 0)
                     return sc.read(bb);
 
