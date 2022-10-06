@@ -188,6 +188,7 @@ public abstract class ClassLoader {
     private final ClassLoader parent;
 
     /**
+     * TODO 并发加载，通过降低锁粒度实现
      * Encapsulates the set of parallel capable loader types.
      */
     private static class ParallelLoaders {
@@ -198,6 +199,7 @@ public abstract class ClassLoader {
             Collections.newSetFromMap(
                 new WeakHashMap<Class<? extends ClassLoader>, Boolean>());
         static {
+            // TODO 默认装载 ClassLoader
             synchronized (loaderTypes) { loaderTypes.add(ClassLoader.class); }
         }
 
@@ -275,6 +277,7 @@ public abstract class ClassLoader {
 
     private ClassLoader(Void unused, ClassLoader parent) {
         this.parent = parent;
+        // TODO 如果并发加载器有注册该加载器
         if (ParallelLoaders.isRegistered(this.getClass())) {
             parallelLockMap = new ConcurrentHashMap<>();
             package2certs = new ConcurrentHashMap<>();
@@ -395,6 +398,7 @@ public abstract class ClassLoader {
     protected Class<?> loadClass(String name, boolean resolve)
         throws ClassNotFoundException
     {
+        // TODO 获取锁
         synchronized (getClassLoadingLock(name)) {
             // First, check if the class has already been loaded
             Class<?> c = findLoadedClass(name);
@@ -451,6 +455,7 @@ public abstract class ClassLoader {
      * @since  1.7
      */
     protected Object getClassLoadingLock(String className) {
+        // TODO 默认锁为当前classloader
         Object lock = this;
         if (parallelLockMap != null) {
             Object newLock = new Object();
